@@ -1,6 +1,25 @@
-const request = require('postman-request')
+const geocode = require('./utils/geocode')
+const forecast = require("./utils/forecast")
 
-const url = 'http://api.weatherapi.com/v1/current.json?key=361eb8e3a7df43a3967154200221905&q=Pune'
-request({url:url,json:true},(error,response) => {
-    console.log("It is currently "+response.body.temp_c + " degrees. It feels like "+ response.body.feelslike_c)
-})
+
+const address = process.argv[2] // get command line arguments
+
+if(!address){
+    console.log('Provide address')
+}
+else{
+    geocode(address,(error,{latitude,longitude,place_name} = {}) => {
+        if(error){
+            return console.log(error)
+        }
+        forecast(latitude,longitude,(error,forecast) => {
+            if(error){
+                return console.log(error)
+            }
+            console.log(place_name)
+            console.log(forecast)
+        })
+    })
+}
+
+
